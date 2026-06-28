@@ -36,17 +36,13 @@ def split_nodes_items(old_nodes: list[TextNode], text_type: TextType) -> list[Te
                 sections = node.text.split(
                     f"{opening_symbol}{item_text}]({item_link})", 1
                 )
-                if len(sections) == 2:
+                if sections[0] != "":
                     new_nodes.append(TextNode(sections[0], TextType.TEXT, node.url))
-                    new_nodes.append(TextNode(item_text, text_type, item_link))
-                    node.text = sections[
-                        1
-                    ]  # Update the node text to the remaining section for further processing
-                else:
-                    new_nodes.append(TextNode(sections[0], TextType.TEXT, node.url))
-                    new_nodes.append(TextNode(item_text, text_type, item_link))
-                    new_nodes.append(node)
-    return new_nodes
+                new_nodes.append(TextNode(item_text, text_type, item_link))
+                node.text = sections[
+                    1
+                ]  # Update the node text to the remaining section for further processing
+        return new_nodes
 
 
 def split_nodes_image(old_nodes: list[TextNode]) -> list[TextNode]:
