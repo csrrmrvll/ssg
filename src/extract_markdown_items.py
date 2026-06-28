@@ -1,5 +1,16 @@
 import re
 
+from markdown_items import MarkdownItemType
+from textnode import TextType
+
+
+def extract_markdown_items(text: str, text_type: TextType) -> list[tuple[str, str]]:
+    if text_type == TextType.IMAGE:
+        return extract_markdown_images(text)
+    elif text_type == TextType.LINK:
+        return extract_markdown_links(text)
+    raise ValueError("Unsupported markdown item type")
+
 
 def extract_markdown_images(text: str) -> list[tuple[str, str]]:
     """

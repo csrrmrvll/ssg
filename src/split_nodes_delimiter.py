@@ -19,10 +19,9 @@ def split_nodes_delimiter(old_nodes: list[TextNode], delimiter: str, text_type: 
         raise ValueError(f"Unsupported delimiter: {delimiter}")
     new_nodes: list[TextNode] = []
     for node in old_nodes:
-        assert node.text_type == TextType.TEXT, f"Node text_type must be {TextType.TEXT}, got {node.text_type}"
         if node.text_type != TextType.TEXT:
             new_nodes.append(node)
-        else:
+        elif node.text != "":
             parts = node.text.split(delimiter)
             for i, part in enumerate(parts):
                 if part:
