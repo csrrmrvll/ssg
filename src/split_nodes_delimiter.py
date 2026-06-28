@@ -37,6 +37,9 @@ def split_nodes_delimiter(old_nodes: list[TextNode], delimiter: str, text_type: 
             continue
         if node.text == "":
             continue  # Skip empty nodes
+        if delimiter not in node.text:
+            new_nodes.append(node)
+            continue
         parts = node.text.split(delimiter)
         if needs_closing_delimiter and len(parts) % 2 == 0:
             raise ValueError(f"Unmatched delimiter '{delimiter}' in text: {node.text}")
