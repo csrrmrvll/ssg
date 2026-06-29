@@ -3,6 +3,21 @@ from enum import Enum
 import re
 
 
+def print_nodes(nodes):
+    for node in nodes:
+        print(f"Node: {node}")
+
+
+def text_to_textnodes(text: str) -> list[TextNode]:
+    nodes = [TextNode(text, TextType.TEXT)]
+    nodes = split_nodes_delimiter(nodes, Delimiter.BOLD.value, TextType.BOLD)
+    nodes = split_nodes_delimiter(nodes, Delimiter.ITALIC.value, TextType.ITALIC)
+    nodes = split_nodes_delimiter(nodes, Delimiter.CODE.value, TextType.CODE)
+    nodes = split_nodes_image(nodes)
+    nodes = split_nodes_link(nodes)
+    return nodes
+
+
 class Delimiter(Enum):
     BOLD = "**"
     ITALIC = "_"
@@ -90,6 +105,7 @@ def extract_markdown_items(text: str, text_type: TextType) -> list[tuple[str, st
         return extract_markdown_links(text)
     else:
         raise ValueError(f"Unsupported item type: {text_type}")
+
 
 def extract_markdown_images(text: str) -> list[tuple[str, str]]:
     pattern = r"!\[([^\[\]]*)\]\(([^\(\)]*)\)"
