@@ -12,7 +12,7 @@ class BlockType(Enum):
 
 
 def block_to_block_type(block: str) -> BlockType:
-    if re.search(r"^#{1,6} .*\n", block):
+    if re.search(r"^#{1,6} .*\n", block, re.MULTILINE):
         return BlockType.HEADING
     elif block.startswith("```\n") and block.endswith("\n```"):
         return BlockType.CODE
