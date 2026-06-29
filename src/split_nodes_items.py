@@ -12,6 +12,7 @@ def get_opening_symbol(text_type: TextType) -> str:
     else:
         raise ValueError(f"Unsupported item type: {text_type}")
 
+
 def split_nodes_items(old_nodes: list[TextNode], text_type: TextType) -> list[TextNode]:
     new_nodes: list[TextNode] = []
     matches = extract_markdown_items(
@@ -28,7 +29,9 @@ def split_nodes_items(old_nodes: list[TextNode], text_type: TextType) -> list[Te
         remaining_text = old_node.text
         for item_text, item_link in matches:
             if f"{opening_symbol}{item_text}]({item_link})" in old_node.text:
-                split_nodes = remaining_text.split(f"{opening_symbol}{item_text}]({item_link})", 1)
+                split_nodes = remaining_text.split(
+                    f"{opening_symbol}{item_text}]({item_link})", 1
+                )
                 if len(split_nodes) < 2:
                     continue  # Skip if the item is not found in the current node's text
                 first = split_nodes[0]
