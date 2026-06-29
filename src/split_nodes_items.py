@@ -1,4 +1,4 @@
-from split_nodes_delimiter import split_nodes_delimiter
+from inline_markdown import split_nodes_delimiter
 from textnode import TextNode, TextType
 from extract_markdown_items import extract_markdown_items
 from enum import Enum
@@ -12,37 +12,36 @@ def get_opening_symbol(text_type: TextType) -> str:
     else:
         raise ValueError(f"Unsupported item type: {text_type}")
 
-
 def split_nodes_items(old_nodes: list[TextNode], text_type: TextType) -> list[TextNode]:
-    """
-    Splits the text of TextNode objects into separate nodes based on markdown image and link syntax.
-
-    Args:
-        old_nodes (list[TextNode]): A list of TextNode objects to be split.
-    """
     new_nodes: list[TextNode] = []
-    node_images = extract_markdown_items(
+    matches = extract_markdown_items(
         " ".join([node.text for node in old_nodes if node.text_type == TextType.TEXT]),
         text_type,
     )
-    if not node_images:
+    if not matches:
         return old_nodes
     opening_symbol = get_opening_symbol(text_type)
-    for node in old_nodes:
-        if node.text_type != TextType.TEXT:
-            new_nodes.append(node)
-        else:
-            for item_text, item_link in node_images:
-                sections = node.text.split(
-                    f"{opening_symbol}{item_text}]({item_link})", 1
-                )
-                if sections[0] != "":
-                    new_nodes.append(TextNode(sections[0], TextType.TEXT, node.url))
+    for old_node in old_nodes:
+        if old_node.text_type != TextType.TEXT:
+            new_nodes.append(old_node)
+            continue
+        remaining_text = old_node.text
+        for item_text, item_link in matches:
+            if f"{opening_symbol}{item_text}]({item_link})" in old_node.text:
+                split_nodes = remaining_text.split(f"{opening_symbol}{item_text}]({item_link})", 1)
+                if len(split_nodes) < 2:
+                    continue  # Skip if the item is not found in the current node's text
+                first = split_nodes[0]
+                second = split_nodes[1]
+                if first != "":
+                    new_nodes.append(TextNode(first, TextType.TEXT, old_node.url))
                 new_nodes.append(TextNode(item_text, text_type, item_link))
-                node.text = sections[
-                    1
-                ]  # Update the node text to the remaining section for further processing
-        return new_nodes
+                remaining_text = second  # Update remaining_text to the second part for further splitting
+                if remaining_text == "":
+                    break  # No more text to process in this node
+        if remaining_text != "" and remaining_text not in [n.text for n in new_nodes]:
+            new_nodes.append(TextNode(remaining_text, TextType.TEXT, old_node.url))
+    return new_nodes
 
 
 def split_nodes_image(old_nodes: list[TextNode]) -> list[TextNode]:
