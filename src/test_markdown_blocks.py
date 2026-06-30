@@ -46,6 +46,20 @@ This is the same paragraph on a new line
             ],
         )
 
+    def test_block_to_block_types(self):
+        block = "# heading"
+        self.assertEqual(block_to_block_type(block), BlockType.HEADING)
+        block = "```\ncode\n```"
+        self.assertEqual(block_to_block_type(block), BlockType.CODE)
+        block = "> quote\n> more quote"
+        self.assertEqual(block_to_block_type(block), BlockType.QUOTE)
+        block = "- list\n- items"
+        self.assertEqual(block_to_block_type(block), BlockType.ULIST)
+        block = "1. list\n2. items"
+        self.assertEqual(block_to_block_type(block), BlockType.OLIST)
+        block = "paragraph"
+        self.assertEqual(block_to_block_type(block), BlockType.PARAGRAPH)
+
     def test_markdown_to_blocks_empty(self):
         md = ""
         blocks = markdown_to_blocks(md)
@@ -63,11 +77,11 @@ This is the same paragraph on a new line
         self.assertEqual(block_to_block_type(">This is also a quote"), BlockType.QUOTE)
         self.assertEqual(
             block_to_block_type("- This is an unordered list item"),
-            BlockType.UNORDERED_LIST,
+            BlockType.ULIST,
         )
         self.assertEqual(
             block_to_block_type("1. This is an ordered list item"),
-            BlockType.ORDERED_LIST,
+            BlockType.OLIST,
         )
 
 
