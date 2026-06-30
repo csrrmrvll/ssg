@@ -7,23 +7,24 @@ class BlockType(Enum):
     HEADING = "heading"
     CODE = "code"
     QUOTE = "quote"
-    UNORDERED_LIST = "unordered_list"
-    ORDERED_LIST = "ordered_list"
+    ULIST = "unordered_list"
+    OLIST = "ordered_list"
 
 
 def block_to_block_type(block: str) -> BlockType:
-    if re.search(r"^#{1,6} .*\n", block, re.MULTILINE):
+    if re.search(r"^#{1,6} .*\n?", block, re.MULTILINE):
         return BlockType.HEADING
-    elif block.startswith("```\n") and block.endswith("\n```"):
+    elif re.search(r"^```\n[\s\S]*?```$", block, re.MULTILINE):
         return BlockType.CODE
     elif re.search(r"^> ?.*", block, re.MULTILINE):
         return BlockType.QUOTE
     elif re.search(r"^- .*", block, re.MULTILINE):
-        return BlockType.UNORDERED_LIST
+        return BlockType.ULIST
     elif re.search(r"^\d+\. .*", block, re.MULTILINE):
-        return BlockType.ORDERED_LIST
+        return BlockType.OLIST
     else:
         return BlockType.PARAGRAPH
+
 
 def markdown_to_blocks(markdown: str) -> list[str]:
     lines = markdown.split("\n\n")
