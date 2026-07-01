@@ -1,38 +1,19 @@
 import os
 import shutil
 
-from textnode import TextNode, TextType
+from copystatic import copy_files_recursive
 
-
-def publish_content(origin: str = "static", destination: str = "public") -> None:
-    try:
-        abs_origin = os.path.abspath(origin)
-        abs_destination = os.path.abspath(destination)
-        print(f"Publishing content from '{abs_origin}' to '{abs_destination}'")
-        if not os.path.exists(abs_origin):
-            raise FileNotFoundError(f"Origin directory '{origin}' does not exist.")
-        if not os.path.isdir(abs_origin):
-            raise NotADirectoryError(f"Origin '{origin}' is not a directory.")
-        if os.path.exists(abs_destination) and not os.path.isdir(abs_destination):
-            raise NotADirectoryError(f"Destination '{destination}' is not a directory.")
-        if abs_origin == abs_destination:
-            raise ValueError("Origin and destination directories cannot be the same.")
-        if os.path.exists(abs_destination):
-            print(f"Destination directory '{destination}' already exists. Removing it.")
-            shutil.rmtree(abs_destination)
-        if not os.access(abs_origin, os.R_OK):
-            raise PermissionError(f"Origin directory '{origin}' is not readable.")
-        print(f"Copying content...")
-        shutil.copytree(abs_origin, abs_destination)
-        print(f"Content published successfully '{abs_destination}'.")
-        os.listdir(abs_destination)
-    except Exception as e:
-        print(f"An error occurred while publishing content: {e}")
+dir_path_static = "./static"
+dir_path_public = "./public"
 
 
 def main() -> None:
-    publish_content()
+    print("Deleting public directory...")
+    if os.path.exists(dir_path_public):
+        shutil.rmtree(dir_path_public)
+
+    print("Copying static files to public directory...")
+    copy_files_recursive(dir_path_static, dir_path_public)
 
 
-if __name__ == "__main__":
-    main()
+main()
