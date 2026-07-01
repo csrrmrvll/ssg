@@ -15,8 +15,10 @@ def main() -> None:
     argv = sys.argv
     if len(argv) > 1:
         basepath = argv[1]
+        print(f"Using basepath: {basepath}")
     else:
         basepath = "/"
+        print(f"Using default basepath: {basepath}")
     print("Deleting public directory...")
     if os.path.exists(dir_path_public):
         shutil.rmtree(dir_path_public)

@@ -11,12 +11,14 @@ def generate_pages_recursive(
         dest_path = os.path.join(dest_dir_path, filename)
         if os.path.isfile(from_path):
             dest_path = Path(dest_path).with_suffix(".html")
-            generate_page(from_path, template_path, dest_path)
+            generate_page(from_path, template_path, dest_path, basepath)
         else:
             generate_pages_recursive(from_path, template_path, dest_path, basepath)
 
 
-def generate_page(from_path: str, template_path: str, dest_path: str | Path, basepath: str = "/") -> None:
+def generate_page(
+    from_path: str, template_path: str, dest_path: str | Path, basepath: str = "/"
+) -> None:
     print(f" * {from_path} {template_path} -> {dest_path}")
     from_file = open(from_path, "r")
     markdown_content = from_file.read()
@@ -38,8 +40,8 @@ def generate_page(from_path: str, template_path: str, dest_path: str | Path, bas
     dest_dir_path = os.path.dirname(dest_path)
     if dest_dir_path != "":
         os.makedirs(dest_dir_path, exist_ok=True)
-    to_file = open(dest_path, "w")
-    to_file.write(template)
+    with open(dest_path, "w") as to_file:
+        to_file.write(template)
 
 
 def extract_title(md: str) -> str:
